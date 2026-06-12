@@ -8,7 +8,7 @@ export default function AuthenticatedLayout({
     children,
     onSendMessage,
 }) {
-    const user = usePage().props.auth.user;
+    const user = usePage().props?.auth?.user;
     console.log(user);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
