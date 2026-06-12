@@ -33,10 +33,6 @@
         "VIEW_COMPILED_PATH": "/tmp",
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
-        "SESSION_DRIVER": "database",
-        "DB_DATABASE": "pgsql",
-        "DB_CONNECTION": "postgres",
-        "DB_PORT": "6543",
-        "DB_USERNAME": "postgres"
+        "SESSION_DRIVER": "database"
     }
 }
