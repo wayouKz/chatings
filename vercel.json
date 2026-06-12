@@ -22,7 +22,7 @@
     "outputDirectory": "public",
     "env": {
         "APP_ENV": "production",
-        "APP_DEBUG": "false",
+        "APP_DEBUG": "true",
         "APP_URL": "https://chatings-2lwd35ccp-wayoukzs-projects.vercel.app",
         "APP_KEY": "base64:aCDG1z2V1yOFa5KAAmoCKUNk4TdkFIoeu7KND7X8rlQ=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
