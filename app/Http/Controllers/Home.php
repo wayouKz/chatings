@@ -16,7 +16,13 @@ class Home extends Controller
     }
     public function index()
     {
-        $friends = $this->supabase->getByFriendId('friendships', session('supabase_user')['id']) ?? [];
+       $user = session('supabase_user');
+
+if (!$user || !isset($user['id'])) {
+    $friends = [];
+} else {
+    $friends = $this->supabase->getByFriendId('friendships', $user['id']);
+}
 
         $allUsers = $this->supabase->getAll('users');
         return Inertia::render('Home', [
