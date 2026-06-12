@@ -160,23 +160,13 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                     </button>
                                 )}
 
-                                {auth.user ? (
-                                    <Link
-                                        href={route("home")}
-                                        className="text-sm font-semibold leading-6 text-slate-900 dark:text-white hover:underline"
-                                    >
-                                        Open Web App{" "}
-                                        <span aria-hidden="true">→</span>
-                                    </Link>
-                                ) : (
-                                    <Link
-                                        href={route("login")}
-                                        className="text-sm font-semibold leading-6 text-slate-900 dark:text-white hover:underline"
-                                    >
-                                        Login to continue{" "}
-                                        <span aria-hidden="true">→</span>
-                                    </Link>
-                                )}
+                                <Link
+                                    href={route("login")}
+                                    className="text-sm font-semibold leading-6 text-slate-900 dark:text-white hover:underline"
+                                >
+                                    Login to continue{" "}
+                                    <span aria-hidden="true">→</span>
+                                </Link>
                             </div>
 
                             {!isInstallable && !isInstalled && (
