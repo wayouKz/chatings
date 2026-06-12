@@ -34,11 +34,10 @@
         "CACHE_DRIVER": "array",
         "LOG_CHANNEL": "stderr",
         "SESSION_DRIVER": "database",
-        "DB_DATABASE": "postgres",
+        "DB_DATABASE": "pgsql",
         "DB_CONNECTION": "postgres",
         "DB_HOST": "@db.ziyhqisiqrnbanedlqqa.supabase.co",
         "DB_PORT": "6543",
-        "DB_USERNAME": "postgres",
-        "DB_PASSWORD": "postgres"
+        "DB_USERNAME": "postgres"
     }
 }
