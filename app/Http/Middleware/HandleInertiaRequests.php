@@ -49,7 +49,7 @@ return [
             ? \App\Models\User::where('id', '!=', $request->user()->id)->get()
             : [],
 
-            'friends' => $this->supabase->getByFriendId('friendships', Auth::user()->id),
+    'friends' => Auth::check() ? $this->supabase->getByFriendId('friendships', Auth::user()->id) : [],
 ];
 }
 }
