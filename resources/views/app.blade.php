@@ -18,10 +18,14 @@
         @viteReactRefresh
         @vite(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"])
         @inertiaHead
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="#4f46e5">
+        <meta name="apple-mobile-web-app-capable" content="yes">
     </head>
 
     <body class="font-sans antialiased">
         @inertia
+        <script src="sw-register.js"></script>
     </body>
 
 </html>
