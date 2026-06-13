@@ -51,11 +51,11 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
     const mediaRecorderRef = useRef(null);
     const audioChunksRef = useRef([]);
     const timerIntervalRef = useRef(null);
-
     useEffect(() => {
         if (!user?.id) return;
-        const timer = setTimeout(() => registerPush(), 1000);
-        return () => clearTimeout(timer);
+
+        // Langsung panggil tanpa setTimeout
+        registerPush();
     }, [user?.id]);
 
     useEffect(() => {
@@ -372,11 +372,10 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
             const sub = subscription.toJSON();
             if (!sub?.endpoint || !sub?.keys) return;
 
-            // 🔥 1. Cek dulu apakah device (endpoint) ini sudah ada di database
+            // 🔥 1. Cek HANYA berdasarkan endpoint (karena 1 browser = 1 endpoint identik)
             const { data: existingSub, error: fetchError } = await supabase
                 .from("push_subscriptions")
-                .select("id")
-                .eq("user_id", user.id)
+                .select("id, user_id")
                 .eq("endpoint", sub.endpoint)
                 .maybeSingle();
 
@@ -385,13 +384,33 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
                 return;
             }
 
-            // 🔥 2. Jika sudah ada, hentikan proses (jangan insert lagi)
+            // 🔥 2. Logika Pengecekan Akun
             if (existingSub) {
-                console.log("Device sudah terdaftar.");
-                return;
+                if (existingSub.user_id === user.id) {
+                    // Skenario A: Device sudah terdaftar untuk user yang sedang login
+                    console.log("Device sudah terdaftar.");
+                    return;
+                } else {
+                    // Skenario B: Device sama, tapi ganti akun (Logout -> Login akun lain)
+                    // Kita UPDATE kepemilikan device ini ke user yang baru
+                    const { error: updateError } = await supabase
+                        .from("push_subscriptions")
+                        .update({ user_id: user.id })
+                        .eq("id", existingSub.id);
+
+                    if (updateError) {
+                        console.error(
+                            "Gagal mengupdate kepemilikan device:",
+                            updateError,
+                        );
+                    } else {
+                        console.log("Device dialihkan ke user baru.");
+                    }
+                    return;
+                }
             }
 
-            // 🔥 3. Jika belum ada, lakukan INSERT
+            // 🔥 3. Jika endpoint benar-benar belum ada, lakukan INSERT
             const { error: insertError } = await supabase
                 .from("push_subscriptions")
                 .insert({
