@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Home;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -14,10 +16,18 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/home', [App\Http\Controllers\Home::class, 'index'])->middleware(['supabase.auth'])->name('home');
-Route::post('/add-friend', [App\Http\Controllers\Home::class, 'add_friends'])->middleware(['supabase.auth'])->name('friends.add');
-Route::get('/chat-show/{id}', [App\Http\Controllers\Home::class, 'chat_show'])->middleware(['supabase.auth'])->name('chat.show');
-Route::middleware('supabase.auth')->group(function () {
+
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Home');
+})->middleware(['auth', 'verified'])->name('home');
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::post('add-friends', [Home::class, 'add_friends'])->name('friends.add');
+    Route::get('chatShow/{friendId}', [Home::class, 'chat_show'])->name('chat.show');
+});
+
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

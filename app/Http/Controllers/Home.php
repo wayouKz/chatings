@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\SupabaseService;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class Home extends Controller
@@ -18,11 +19,11 @@ class Home extends Controller
     {
        $user = session('supabase_user');
 
-if (!$user || !isset($user['id'])) {
-    $friends = [];
-} else {
-    $friends = $this->supabase->getByFriendId('friendships', $user['id']);
-}
+    if (!$user || !isset($user['id'])) {
+        $friends = [];
+    } else {
+        $friends = $this->supabase->getByFriendId('friendships', $user['id']);
+    }
 
         $allUsers = $this->supabase->getAll('users');
         return Inertia::render('Home', [
@@ -35,7 +36,7 @@ if (!$user || !isset($user['id'])) {
     {
         $friendId = request('friend_id');
        $post = $this->supabase->create('friendships', [
-            'user_id' => session('supabase_user')['id'],
+            'user_id' => Auth::user()->id,
             'friend_id' => $friendId,
         ]);
         return redirect()->route('home');
@@ -44,17 +45,17 @@ if (!$user || !isset($user['id'])) {
 public function chat_show($friendId)
 {
    $conversation = $this->supabase->findConversation(
-    session('supabase_user')['id'],
+    Auth::user()->id,
     $friendId
     );
 
-    $friendsData = $this->supabase->getByFriendId('friendships', session('supabase_user')['id']);
+    $friendsData = $this->supabase->getByFriendId('friendships', Auth::user()->id);
 if (empty($conversation)) {
 
-    $conversation = $this->supabase->createConversation(session('supabase_user')['id'], $friendId);
+    $conversation = $this->supabase->createConversation(Auth::user()->id, $friendId);
     $this->supabase->addParticipant(
         $conversation,
-        session('supabase_user')['id']
+        Auth::user()->id
     );
 
     $this->supabase->addParticipant(
@@ -63,7 +64,7 @@ if (empty($conversation)) {
     );
 }
 return Inertia::render('ChatShow', [
-    'conversationId' => $conversation[0]['conversation_id'],
+    'conversationId' => $conversation[0]['conversation_id'] ?? null,
     'friendId' => $friendId,
     'friendData' => $friendsData[0]
 ]);

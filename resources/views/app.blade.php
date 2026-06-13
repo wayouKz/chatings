@@ -13,10 +13,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
             integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
             crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="manifest" href="{{ asset('manifest.json') }}">
-
-
-        <meta name="theme-color" content="#0d6efd">
         <!-- Scripts -->
         @routes
         @viteReactRefresh
@@ -27,6 +23,5 @@
     <body class="font-sans antialiased">
         @inertia
     </body>
-    <script src="{{ asset('sw-register.js') }}"></script>
 
 </html>

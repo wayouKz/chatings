@@ -4,35 +4,25 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
-  $middleware->web(append: [
-    \Illuminate\Session\Middleware\StartSession::class,
-
-    \App\Http\Middleware\SupabaseAuth::class,
-
-    \App\Http\Middleware\HandleInertiaRequests::class,
-
-    \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
-]);
-   $middleware->alias([
-        'supabase.auth' => \App\Http\Middleware\SupabaseAuth::class,
-    ]);
-        //
-    })
     ->withMiddleware(function (Middleware $middleware) {
-    $middleware->validateCsrfTokens( [
-        'manifest.json',
-        'sw-register.js',
-    ]);
-})
-    ->withExceptions(function (Exceptions $exceptions): void {
+        // Gabungkan semuanya di sini
+        $middleware->web(append: [
+            \App\Http\Middleware\HandleInertiaRequests::class,
+            \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'manifest.json',
+            'sw-register.js',
+        ]);
+    })
+    ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
