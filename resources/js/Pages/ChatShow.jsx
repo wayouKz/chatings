@@ -323,6 +323,7 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
             .from("push_subscriptions")
             .select("*")
             .eq("user_id", friendId);
+        console.log(subs);
         if (subs?.length) {
             await fetch(
                 `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-push`,
@@ -371,26 +372,43 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
             const sub = subscription.toJSON();
             if (!sub?.endpoint || !sub?.keys) return;
 
-            // Cek apakah subscription sudah ada di DB
-            const { data: existingSub } = await supabase
+            // 🔥 1. Cek dulu apakah device (endpoint) ini sudah ada di database
+            const { data: existingSub, error: fetchError } = await supabase
                 .from("push_subscriptions")
                 .select("id")
                 .eq("user_id", user.id)
                 .eq("endpoint", sub.endpoint)
                 .maybeSingle();
 
-            if (existingSub) return; // Sudah terdaftar
+            if (fetchError) {
+                console.error("Gagal mengecek data:", fetchError);
+                return;
+            }
 
-            // Simpan subscription baru ke DB
-            await supabase.from("push_subscriptions").insert({
-                user_id: user.id,
-                endpoint: sub.endpoint,
-                auth: sub.keys.auth,
-                p256dh: sub.keys.p256dh,
-                subscription: sub,
-            });
+            // 🔥 2. Jika sudah ada, hentikan proses (jangan insert lagi)
+            if (existingSub) {
+                console.log("Device sudah terdaftar.");
+                return;
+            }
+
+            // 🔥 3. Jika belum ada, lakukan INSERT
+            const { error: insertError } = await supabase
+                .from("push_subscriptions")
+                .insert({
+                    user_id: user.id,
+                    endpoint: sub.endpoint,
+                    auth: sub.keys.auth,
+                    p256dh: sub.keys.p256dh,
+                    subscription: sub,
+                });
+
+            if (insertError) {
+                console.error("Gagal menyimpan subscription:", insertError);
+            } else {
+                console.log("Device baru berhasil didaftarkan!");
+            }
         } catch (err) {
-            console.error("Gagal mendaftar push notif:", err);
+            console.log("Push error:", err);
         }
     };
 
