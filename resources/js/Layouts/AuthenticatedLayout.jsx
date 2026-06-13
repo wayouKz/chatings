@@ -1,4 +1,4 @@
-import ModalSearchFriends from "@/PagesOld/partials/ModalSearchFriends";
+import ModalSearchFriends from "@/Pages/partials/ModalSearchFriends";
 import { Link, usePage, router } from "@inertiajs/react";
 import { useState, useRef } from "react";
 
