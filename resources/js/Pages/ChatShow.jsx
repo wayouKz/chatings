@@ -357,7 +357,41 @@ export default function ChatShow({ conversationId, friendId, friendData }) {
     };
 
     const registerPush = async () => {
-        /* Push Notif Sama */
+        try {
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") return;
+
+            const registration =
+                await navigator.serviceWorker.register("/service-worker.js");
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+            });
+
+            const sub = subscription.toJSON();
+            if (!sub?.endpoint || !sub?.keys) return;
+
+            // Cek apakah subscription sudah ada di DB
+            const { data: existingSub } = await supabase
+                .from("push_subscriptions")
+                .select("id")
+                .eq("user_id", user.id)
+                .eq("endpoint", sub.endpoint)
+                .maybeSingle();
+
+            if (existingSub) return; // Sudah terdaftar
+
+            // Simpan subscription baru ke DB
+            await supabase.from("push_subscriptions").insert({
+                user_id: user.id,
+                endpoint: sub.endpoint,
+                auth: sub.keys.auth,
+                p256dh: sub.keys.p256dh,
+                subscription: sub,
+            });
+        } catch (err) {
+            console.error("Gagal mendaftar push notif:", err);
+        }
     };
 
     const getStatusText = (lastSeen) => {
