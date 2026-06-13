@@ -1,4 +1,4 @@
-import AuthenticatedLayout from "@/LayoutsOld/AuthenticatedLayout";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { usePage } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../libs/supabase";
